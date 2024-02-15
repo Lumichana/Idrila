@@ -1,0 +1,86 @@
+{
+    "name": "idrila",
+    "version": "1.0.0",
+    "private": true,
+    "homepage": "./",
+    "main": "public/main.js",
+    "author": "lhinxue <lhinxue@gmail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "@ant-design/colors": "^7.0.0",
+        "@ant-design/icons": "^5.2.6",
+        "@ant-design/plots": "^1.2.5",
+        "@electron/remote": "^2.0.11",
+        "@radix-ui/react-scroll-area": "^1.0.5",
+        "@testing-library/jest-dom": "^5.14.1",
+        "@testing-library/react": "^13.0.0",
+        "@testing-library/user-event": "^13.2.1",
+        "antd": "^5.9.4",
+        "body-parser": "^1.20.2",
+        "cors": "^2.8.5",
+        "dayjs": "^1.11.10",
+        "electron-is-dev": "^2.0.0",
+        "express": "^4.18.2",
+        "ip": "^1.1.8",
+        "mime": "^4.0.1",
+        "music-metadata": "^7.14.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-scripts": "5.0.1",
+        "web-vitals": "^2.1.0"
+    },
+    "scripts": {
+        "start": "concurrently -k \"cross-env BROWSER=none yarn react-scripts start\" \"yarn electron .\"",
+        "react": "yarn react-scripts start",
+        "build-win": "yarn react-scripts build && electron-builder -w -c.extraMetadata.main=build/main.js",
+        "build-mac": "yarn react-scripts build && electron-builder -m -c.extraMetadata.main=build/main.js"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "react-app/jest"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.1",
+        "cross-env": "^7.0.3",
+        "electron": "^25.3.0",
+        "electron-builder": "^24.6.4",
+        "electron-rebuild": "^3.2.9",
+        "wait-on": "^7.0.1"
+    },
+    "build": {
+        "productName": "Idrila",
+        "appId": "Idrila.furina.me",
+        "files": [
+            "build/**/*",
+            "node_modules/**/*"
+        ],
+        "directories": {
+            "buildResources": "public"
+        },
+        "mac": {
+            "target": "dmg"
+        },
+        "win": {
+            "target": [
+                "portable"
+            ]
+        },
+        "linux": {
+            "target": "deb"
+        }
+    }
+}

@@ -1,0 +1,8 @@
+.anticon svg {
+    width: 1em;
+    height: 1em;
+}
+
+.anticon[classid="IconFilled"] svg {
+    fill: currentColor;
+}

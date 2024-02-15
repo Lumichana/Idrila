@@ -1,0 +1,106 @@
+.Report {
+    width: 100%;
+}
+
+.Report h3 {
+    text-align: center;
+}
+
+.Report-Page.Page1 {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 666px;
+}
+
+.Report-Page > * {
+    height: 100%;
+}
+
+.ant-divider {
+    margin-inline: 0;
+    margin: 0;
+}
+
+.Report-Balance,
+.Report-TTB {
+    height: 100%;
+}
+
+.Report-Balance,
+.Report-TTB {
+    width: 50%;
+}
+
+.Report-Balance > .Report-Balance-Number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.Report-Balance > .Report-Balance-Number h1 {
+    margin-top: 15px;
+}
+
+.Report-Currency {
+    width: 300px;
+    margin: auto;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.Report-Currency > .ant-space {
+    justify-content: space-between;
+}
+
+.Report-Balance {
+    display: flex;
+    flex-direction: column;
+}
+
+.Report-Balance-Number {
+    height: 300px;
+    padding-bottom: 20px;
+}
+
+.Report-Balance-Graph {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.Report-Balance-Graph > div {
+    width: 250px;
+}
+
+.Report-TTB {
+    display: flex;
+    flex-direction: column;
+}
+
+.Report-TTB-Chart {
+    flex: 1;
+}
+
+.Report-TTBT,
+.Report-TEB {
+    padding: 20px 40px;
+}
+
+.Report-TTB-EB {
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+    padding: 10px 0 20px 0;
+}
+
+.Report-TTB-EB .ant-select {
+    width: 150px;
+}

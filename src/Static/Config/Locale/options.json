@@ -1,0 +1,17 @@
+[
+    {
+        "value": "en",
+        "label": "English",
+        "Chinese": "英语"
+    },
+    {
+        "value": "ja",
+        "label": "日本語",
+        "Chinese": "日语"
+    },
+    {
+        "value": "zh",
+        "label": "中文",
+        "Chinese": "中文"
+    }
+]

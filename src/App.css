@@ -1,0 +1,65 @@
+@-webkit-keyframes rotate-center {
+    0% {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes rotate-center {
+    0% {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+.App .Header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+    padding: 0 10px 0 6px;
+    box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.App > .Header > .LogoTitle {
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity .3s ease-in-out;
+    margin-left: 5px;
+}
+
+.App > .Header > .LogoTitle:hover {
+    cursor: pointer;
+    opacity: .8;
+}
+
+.App > .Header > .LogoTitle > .ant-space-item {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.App > .Header > .LogoTitle .TitleImage {
+    animation: rotate-center 20s linear infinite;
+}
+
+.App > .Header > .LogoTitle .TitleText {
+    display: none;
+    margin-left: 10px;
+    opacity: .9;
+    font-variant: small-caps;
+    font-weight: 100;
+    letter-spacing: 1px;
+    font-size: 17px;
+}

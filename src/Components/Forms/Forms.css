@@ -1,0 +1,22 @@
+.Form_ManageCurrency .ant-card {
+    overflow: hidden;
+}
+
+.Form_ManageCurrency .Item_Currency {
+    border-bottom: 1px solid rgba(5, 5, 5, 0.06);
+}
+
+.Form_ManageCurrency .Item_Currency > input {
+    border-radius: 0;
+    border-right: 1px solid rgba(5, 5, 5, 0.06);
+}
+
+.Form_ManageCurrency .Item_Currency > button {
+    border-radius: 0;
+
+}
+
+.Form_ManageCurrency .Item_Currency > button:not(:last-child) {
+    margin-left: 1px;
+    border-right: 1px solid rgba(5, 5, 5, 0.06);
+}

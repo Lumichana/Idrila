@@ -1,0 +1,47 @@
+.Page_Transaction {
+    height: 100%;
+}
+
+.Page_Transaction .Sider {
+    z-index: 9;
+    box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.Page_Transaction .Header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    z-index: 8;
+    height: 57px;
+    position: relative;
+    box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.1);
+}
+
+.Page_Transaction .Header > *:first-child {
+    margin-left: 10px;
+}
+
+.Page_Transaction .Header > *:first-child .ant-typography {
+    letter-spacing: 1px;
+    font-size: 16px;
+    /*font-variant: small-caps;*/
+    text-transform: uppercase;
+}
+
+.Page_Transaction .Content {
+    height: calc(100% - 115px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Page_Transaction .Footer {
+    height: 57px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 8;
+    position: relative;
+    box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.1);
+}
