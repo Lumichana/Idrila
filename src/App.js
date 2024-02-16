@@ -1,8 +1,9 @@
 import React, { createContext, useEffect, useState, useRef } from "react";
 import AudioPlayer from "./AudioPlayer";
 import { listMusicFiles } from "./utilities/music";
-import { Button, Table } from "antd";
+import { Button, Table, Tabs, ConfigProvider, Layout } from "antd";
 import { HistoryOutlined } from "@ant-design/icons";
+import "./App.css"
 
 export const AppConfig = createContext(undefined);
 
@@ -116,45 +117,86 @@ function App() {
             render: (i) => albums[i].album,
         },
     ];
-
+    const items = [
+        {
+            key: "Playlists",
+            label: "Playlists",
+        },
+        {
+            key: "Songs",
+            label: "Songs",
+        },
+    ];
+    //   const App = () => <Tabs defaultActiveKey="1" items={items} onChange={onChange} />;
     return (
         <AppConfig.Provider value={{ playMusic }}>
-            <div className="App">
-                <AudioPlayer ref={audioPlayerRef} src={currentPlaying} onNext={onNext} />
-
-                <div>
-                    <label>Play Mode:</label>
-                    <select value={playMode} onChange={(e) => handlePlayModeChange(e.target.value)}>
-                        <option value="one">Repeat One</option>
-                        <option value="random">Random</option>
-                        <option value="loop">Loop</option>
-                    </select>
+            <ConfigProvider
+                theme={{
+                    components: {
+                        Layout: {
+                            headerBg: "#fff",
+                            bodyBg: "#fff",
+                            footerBg: "#fff",
+                        },
+                        Button: {
+                            colorText: "#666666",
+                        },
+                        Tooltip: {
+                            fontSize: 12,
+                        },
+                        Message: {
+                            colorError: "red",
+                        },
+                    },
+                    token: {
+                        fontFamily: `Honkai, StarRail-EN, StarRail-ZH, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif`,
+                        fontWeightStrong: 400,
+                    },
+                }}
+            >
+                <div className="App">
+                    <div className="Header">
+                        <Tabs items={items} />
+                    </div>
+                    <div className="Content">
+                        <Table
+                            ref={tableRef}
+                            columns={columns}
+                            dataSource={musicList}
+                            size="small"
+                            pagination={false}
+                            scroll={{ y: "calc(100vh - 230px)" }}
+                            onRow={(record, rowIndex) => {
+                                return {
+                                    onClick: (event) => playMusic(record),
+                                };
+                            }}
+                            rowSelection={{
+                                type: "radio",
+                                selectedRowKeys: [curp],
+                                renderCell: () => <></>,
+                            }}
+                        />
+                    </div>
+                    <div className="Footer">
+                        <AudioPlayer ref={audioPlayerRef} src={currentPlaying} onNext={onNext} />
+                        <div>
+                            <label>Play Mode:</label>
+                            <select value={playMode} onChange={(e) => handlePlayModeChange(e.target.value)}>
+                                <option value="one">Repeat One</option>
+                                <option value="random">Random</option>
+                                <option value="loop">Loop</option>
+                            </select>
+                            <div>
+                                <Button disabled={!enableGetPrevious()} onClick={onPrevious}>
+                                    Previous
+                                </Button>
+                                <button onClick={onNext}>Next</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <Button disabled={!enableGetPrevious()} onClick={onPrevious}>
-                        Previous
-                    </Button>
-                    <button onClick={onNext}>Next</button>
-                </div>
-                <Table
-                    ref={tableRef}
-                    columns={columns}
-                    dataSource={musicList}
-                    size="small"
-                    pagination={false}
-                    scroll={{ y: 500 }}
-                    onRow={(record, rowIndex) => {
-                        return {
-                            onClick: (event) => playMusic(record),
-                        };
-                    }}
-                    rowSelection={{
-                        type: "radio",
-                        selectedRowKeys: [curp],
-                        renderCell: () => <></>,
-                    }}
-                />
-            </div>
+            </ConfigProvider>
         </AppConfig.Provider>
     );
 }

@@ -4,9 +4,7 @@ const AudioPlayer = forwardRef(({ src, onNext }, ref) => {
     const [audio] = useState(new Audio());
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-    const [volume, setVolume] = useState(1);  
-    const [tone, setTone] = useState(1); // Added tone state
-    const [scale, setScale] = useState(1); // Added scale state
+    const [volume, setVolume] = useState(1);
 
     const [playbackRate, setPlaybackRate] = useState(1);
     useEffect(() => {
