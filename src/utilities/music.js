@@ -1,7 +1,7 @@
 import mime from "mime";
 
 import { v4 } from "uuid";
-import config from "./config";
+
 const { parseFile } = window.require("music-metadata");
 const fs = window.require("fs");
 const path = window.require("path");
@@ -10,6 +10,7 @@ async function getMusicMetadata(filePath) {
     try {
         const metadata = await parseFile(filePath, { native: true });
         return {
+            key: crypto.randomUUID(),
             title: metadata.common.title || path.basename(filePath, path.extname(filePath)),
             artist: metadata.common.artist ? metadata.common.artist : "Unknown Artist",
             album: metadata.common.album || "Unknown Album",

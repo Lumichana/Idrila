@@ -1,24 +1,9 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const isDev = require("electron-is-dev");
 const path = require("path");
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const ip = require("ip");
-const config = require("../src/utilities/config");
 require("@electron/remote/main").initialize();
 
 function createWindow() {
-
-    const server = express();
-    server.use(cors());
-    server.use(bodyParser.json());
-    server.use("/", require("./src/controllers/base"));
-    server.use("/config", require("./src/controllers/config"));
-    const host = server.listen(0, () => {
-        ipcMain.handle("serverAddress", () => `http://${ip.address()}:${host.address().port}/`);
-    });
-
     const win = new BrowserWindow({
         width: 1300,
         height: 800,
