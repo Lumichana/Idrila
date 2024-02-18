@@ -20,9 +20,30 @@ body,
 }
 
 .Content {
-    height: calc(100vh - 230px);
+    height: calc(100vh - 120px);
+    overflow: hidden;
 }
 
 .Footer {
-    height: 180px;
+    height:70px;
+    position: relative;
+
+}
+
+.AudioPlayer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+
+.Footer > .Timestamp{
+    margin: 0;
+    top: -.5em;
+    width: 100vw;
+    position: absolute;
 }

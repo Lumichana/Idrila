@@ -3,7 +3,8 @@ import AudioPlayer from "./AudioPlayer";
 import { listMusicFiles } from "./utilities/music";
 import { Button, Table, Tabs, ConfigProvider, Layout } from "antd";
 import { HistoryOutlined } from "@ant-design/icons";
-import "./App.css"
+import "./App.css";
+import { PlayMode } from "./enum";
 
 export const AppConfig = createContext(undefined);
 
@@ -19,7 +20,7 @@ function App() {
 
     useEffect(() => {
         // Fetch and set the music list on startup
-        listMusicFiles("X:\\Idrila\\Music")
+        listMusicFiles("C:\\Users\\hlin\\Documents\\Firefly\\Music")
             .then((musicList) => {
                 setMusicList(musicList.songs);
                 _albums(musicList.albums);
@@ -64,6 +65,16 @@ function App() {
         const song = playHistory[playHistory.length - 2];
         removeLastFromHistory();
         playMusic(song);
+    };
+
+    const onPlayModeChange = () => {
+        if (playMode === PlayMode.Loop) {
+            setPlayMode(PlayMode.RepeatOne);
+        } else if (playMode === PlayMode.RepeatOne) {
+            setPlayMode(PlayMode.Random);
+        } else {
+            setPlayMode(PlayMode.Loop);
+        }
     };
 
     const onNext = () => {
@@ -156,7 +167,7 @@ function App() {
             >
                 <div className="App">
                     <div className="Header">
-                        <Tabs items={items} />
+                        <Tabs items={items} tabBarStyle={{ height: 50, padding: "0 20px" }} />
                     </div>
                     <div className="Content">
                         <Table
@@ -165,7 +176,7 @@ function App() {
                             dataSource={musicList}
                             size="small"
                             pagination={false}
-                            scroll={{ y: "calc(100vh - 230px)" }}
+                            scroll={{ y: "calc(100vh - 159px)" }}
                             onRow={(record, rowIndex) => {
                                 return {
                                     onClick: (event) => playMusic(record),
@@ -179,8 +190,17 @@ function App() {
                         />
                     </div>
                     <div className="Footer">
-                        <AudioPlayer ref={audioPlayerRef} src={currentPlaying} onNext={onNext} />
-                        <div>
+                        <AudioPlayer
+                            ref={audioPlayerRef}
+                            src={currentPlaying}
+                            onNext={onNext}
+                            onPrevious={onPrevious}
+                            enableOnNext
+                            enableOnPrevious={enableGetPrevious()}
+                            playMode={playMode}
+                            onPlayModeChange={onPlayModeChange}
+                        />
+                        {/* <div>
                             <label>Play Mode:</label>
                             <select value={playMode} onChange={(e) => handlePlayModeChange(e.target.value)}>
                                 <option value="one">Repeat One</option>
@@ -193,7 +213,7 @@ function App() {
                                 </Button>
                                 <button onClick={onNext}>Next</button>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </ConfigProvider>
