@@ -24,8 +24,14 @@ body,
     overflow: hidden;
 }
 
+.Menu {
+    height: 100%;
+    width: 300px;
+    overflow-y: auto;
+}
+
 .Footer {
-    height:70px;
+    height: 70px;
     position: relative;
 
 }
@@ -41,9 +47,21 @@ body,
 }
 
 
-.Footer > .Timestamp{
+.Footer>.Timestamp {
     margin: 0;
     top: -.5em;
     width: 100vw;
     position: absolute;
+}
+.Menu .ant-menu-item{
+    height: 50px;
+}
+.AlbumName>div:last-child{
+    font-size: .8em;
+    opacity: .7;
+}
+
+.AlbumName>div{
+    text-overflow: ellipsis;
+    white-space: nowarp;
 }

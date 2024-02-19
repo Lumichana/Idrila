@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState, useRef } from "react";
 import AudioPlayer from "./AudioPlayer";
 import { listMusicFiles } from "./utilities/music";
-import { Button, Table, Tabs, ConfigProvider, Layout } from "antd";
+import { Button, Table, Tabs, ConfigProvider, Layout, Menu, Typography } from "antd";
 import { HistoryOutlined } from "@ant-design/icons";
 import "./App.css";
 import { PlayMode } from "./enum";
@@ -24,6 +24,7 @@ function App() {
             .then((musicList) => {
                 setMusicList(musicList.songs);
                 _albums(musicList.albums);
+                console.log(musicList.albums);
             })
             .catch((error) => console.error("Error fetching music list:", error));
     }, []);
@@ -170,7 +171,24 @@ function App() {
                         <Tabs items={items} tabBarStyle={{ height: 50, padding: "0 20px" }} />
                     </div>
                     <div className="Content">
-                        <Table
+                        <Menu
+                            className="Menu"
+                            mode="inline"
+                            items={[{ key: "_", album: "All Albums" }]
+                                .concat((Object.values(albums) ?? []).sort((a, b) => a.album.localeCompare(b.album)))
+                                .map((v) => ({
+                                    key: v.key,
+                                    label: (
+                                        <Typography className="AlbumName">
+                                            <div>{v.album}</div>
+                                            <div>{v.albumartist}</div>
+                                        </Typography>
+                                    ),
+                                    icon: v.cover ? <img src={v.cover} alt="6" width={40} height={40} /> : undefined,
+                                }))}
+                        />
+
+                        {/* <Table
                             ref={tableRef}
                             columns={columns}
                             dataSource={musicList}
@@ -187,7 +205,7 @@ function App() {
                                 selectedRowKeys: [curp],
                                 renderCell: () => <></>,
                             }}
-                        />
+                        /> */}
                     </div>
                     <div className="Footer">
                         <AudioPlayer

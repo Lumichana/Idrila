@@ -10,15 +10,20 @@ async function getMusicMetadata(filePath) {
     try {
         const metadata = await parseFile(filePath, { native: true });
         return {
-            key: crypto.randomUUID(),
-            title: metadata.common.title || path.basename(filePath, path.extname(filePath)),
-            artist: metadata.common.artist ? metadata.common.artist : "Unknown Artist",
-            album: metadata.common.album || "Unknown Album",
-            filePath: filePath,
+            song: {
+                key: crypto.randomUUID(),
+                title: metadata.common.title || path.basename(filePath, path.extname(filePath)),
+                artist: metadata.common.artist ? metadata.common.artist : "Unknown Artist",
+                artists: metadata.common.artists,
+                year: metadata.common.year,
+                album: metadata.common.album || "Unknown Album",
+                filePath: filePath,
+            },
+            metadata,
         };
     } catch (error) {
         console.error("Error reading metadata for", filePath, error.message);
-        return null;
+        return { song: undefined, metadata: undefined };
     }
 }
 
@@ -30,19 +35,26 @@ async function listMusicFiles(directory) {
 
         const mimeType = mime.getType(filePath);
         if (mimeType && mimeType.startsWith("audio")) {
-            const metadata = await getMusicMetadata(filePath);
-            if (metadata) {
-                musicList.songs.push(metadata);
+            const { song, metadata } = await getMusicMetadata(filePath);
+            if (song && metadata) {
+                musicList.songs.push(song);
 
                 // Generate a GUID key for the album
                 const albumKey = v4();
-                if (!musicList.albums[albumKey]) {
+                if (
+                    !Object.values(musicList.albums).some(
+                        (v) => v.album === song.album && v.albumartist === metadata.common.albumartist
+                    )
+                ) {
                     // If album does not exist in albums list, add it
                     musicList.albums[albumKey] = {
                         key: albumKey,
-                        album: metadata.album,
-                        albumartist: metadata.artist,
-                        cover: null,
+                        album: song.album,
+                        albumartist: metadata.common.albumartist ?? "Unknown Artist",
+                        cover:
+                            (metadata.common.picture ?? []).length > 0
+                                ? "data:image/jpg;base64," + metadata.common.picture[0].data.toString("base64")
+                                : null,
                     };
                 }
 
