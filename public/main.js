@@ -10,6 +10,7 @@ function createWindow() {
         minWidth: 1300,
         minHeight: 700,
         autoHideMenuBar: true,
+        frame: false,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -20,6 +21,14 @@ function createWindow() {
     require("@electron/remote/main").enable(win.webContents);
     win.loadURL(isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../build/index.html")}`);
     if (isDev) win.webContents.openDevTools({ mode: "detach" });
+
+    ipcMain.on("close", () => {
+        win.close();
+    });
+
+    ipcMain.on("minimize", () => {
+        win.minimize();
+    });
 }
 
 app.whenReady().then(createWindow);

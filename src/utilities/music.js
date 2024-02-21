@@ -6,61 +6,72 @@ const { parseFile } = window.require("music-metadata");
 const fs = window.require("fs");
 const path = window.require("path");
 
-async function getMusicMetadata(filePath) {
-    try {
-        const metadata = await parseFile(filePath, { native: true });
-        return {
-            song: {
-                key: crypto.randomUUID(),
-                title: metadata.common.title || path.basename(filePath, path.extname(filePath)),
-                artist: metadata.common.artist ? metadata.common.artist : "Unknown Artist",
-                artists: metadata.common.artists,
-                year: metadata.common.year,
-                album: metadata.common.album || "Unknown Album",
-                filePath: filePath,
-            },
-            metadata,
-        };
-    } catch (error) {
-        console.error("Error reading metadata for", filePath, error.message);
-        return { song: undefined, metadata: undefined };
-    }
-}
-
 async function listMusicFiles(directory) {
-    const musicList = { songs: [], albums: {} };
+    const musicList = { songs: [], albums: {}, artists: [] };
+
+    const unknownAlbumKey = v4();
+
+    musicList.albums[unknownAlbumKey] = {
+        key: unknownAlbumKey,
+        album: "Unknown Album",
+        albumartist: "Unknown Artist",
+        cover: null,
+    };
 
     async function processFile(file) {
         const filePath = path.join(directory, file);
+        try {
+            const mimeType = mime.getType(filePath);
 
-        const mimeType = mime.getType(filePath);
-        if (mimeType && mimeType.startsWith("audio")) {
-            const { song, metadata } = await getMusicMetadata(filePath);
-            if (song && metadata) {
-                musicList.songs.push(song);
+            if (mimeType && mimeType.startsWith("audio")) {
+                const metadata = await parseFile(filePath, { native: true });
 
-                // Generate a GUID key for the album
-                const albumKey = v4();
-                if (
-                    !Object.values(musicList.albums).some(
-                        (v) => v.album === song.album && v.albumartist === metadata.common.albumartist
-                    )
-                ) {
-                    // If album does not exist in albums list, add it
-                    musicList.albums[albumKey] = {
-                        key: albumKey,
-                        album: song.album,
-                        albumartist: metadata.common.albumartist ?? "Unknown Artist",
-                        cover:
-                            (metadata.common.picture ?? []).length > 0
-                                ? "data:image/jpg;base64," + metadata.common.picture[0].data.toString("base64")
-                                : null,
-                    };
+                let song = {
+                    key: crypto.randomUUID(),
+                    title: metadata.common.title || path.basename(filePath, path.extname(filePath)),
+                    artist: metadata.common.artist ? metadata.common.artist : "Unknown Artist",
+                    artists: [],
+                    year: metadata.common.year,
+                    album: unknownAlbumKey,
+                    filePath: filePath,
+                };
+                let artists = song.artist.split(";");
+                for (const a of artists) {
+                    const n = a.trim();
+                    if (!musicList.artists.includes(n)) {
+                        musicList.artists.push(n);
+                    }
+                    song.artists.push(a)
                 }
 
-                // Link the song to the album using the album key
-                metadata.album = albumKey;
+                if (metadata.common.album) {
+                    let findAlbum = Object.values(musicList.albums).find(
+                        (v) => v.album === metadata.common.album && v.albumartist === metadata.common.albumartist
+                    );
+
+                    if (findAlbum) {
+                        // exists
+                        song.album = findAlbum.key;
+                    } else {
+                        const albumKey = v4();
+                        musicList.albums[albumKey] = {
+                            key: albumKey,
+                            album: metadata.common.album,
+                            albumartist: metadata.common.albumartist ?? "Unknown Artist",
+                            cover:
+                                (metadata.common.picture ?? []).length > 0
+                                    ? "data:image/jpg;base64," + metadata.common.picture[0].data.toString("base64")
+                                    : null,
+                        };
+                        song.album = albumKey;
+                    }
+                }
+
+                musicList.songs.push(song);
             }
+        } catch (error) {
+            console.error("Error reading metadata for", filePath, error.message);
+            return { song: undefined, metadata: undefined };
         }
     }
 

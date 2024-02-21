@@ -53,9 +53,8 @@ const AudioPlayer = forwardRef(
         };
 
         const replay = () => {
-            setCurrentTime(0);
-            _isPlaying(true);
-            play();
+            audio.currentTime = 0;
+            audio.play();
         };
 
         const pause = () => {
@@ -110,7 +109,16 @@ const AudioPlayer = forwardRef(
                 <ConfigProvider>
                     <div className="AudioPlayer">
                         <div>
-                            <Button icon={<Icons.PicInPic />} shape="circle" type="link" />
+                            <Button
+                                icon={<Icons.PicInPic />}
+                                shape="circle"
+                                type="link"
+                                onClick={() => {
+                                    document
+                                        .querySelector(".ant-menu.Songs > li.ant-menu-item-selected")
+                                        .scrollIntoView({ behavior: "smooth", block: "center" });
+                                }}
+                            />
                             <Button
                                 icon={
                                     playMode === PlayMode.RepeatOne ? (

@@ -16,15 +16,36 @@ body,
 
 .Header {
     height: 50px;
-
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(5, 5, 5, 0.06);
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
 }
+
+.Header>* {
+
+    -webkit-app-region: no-drag;
+}
+
+.Header button {
+    height: 50px;
+    width: 50px !important;
+    border-radius: 0;
+}
+.Header button>span{
+    margin-top: 4px;
+}
+
 
 .Content {
     height: calc(100vh - 120px);
     overflow: hidden;
+    display: flex;
 }
 
-.Menu {
+.Menu,
+.Songs {
     height: 100%;
     width: 300px;
     overflow-y: auto;
@@ -34,6 +55,10 @@ body,
     height: 70px;
     position: relative;
 
+}
+
+.Content .Songs {
+    flex: 1;
 }
 
 .AudioPlayer {
@@ -53,15 +78,22 @@ body,
     width: 100vw;
     position: absolute;
 }
-.Menu .ant-menu-item{
+
+.ant-tabs-nav-wrap::before {
+    display: none;
+}
+
+.Menu .ant-menu-item,
+.Songs .ant-menu-item {
     height: 50px;
 }
-.AlbumName>div:last-child{
+
+.AlbumName>div:last-child {
     font-size: .8em;
     opacity: .7;
 }
 
-.AlbumName>div{
+.AlbumName>div {
     text-overflow: ellipsis;
     white-space: nowarp;
 }
