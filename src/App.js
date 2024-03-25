@@ -1,13 +1,52 @@
 import React, { createContext, useEffect, useState, useRef } from "react";
 import AudioPlayer from "./AudioPlayer";
-import { listMusicFiles } from "./utilities/music";
+import { getLyrics, listMusicFiles } from "./utilities/music";
 import { Button, Table, Tabs, ConfigProvider, Layout, Menu, Typography, List } from "antd";
 import { HistoryOutlined } from "@ant-design/icons";
 import "./App.css";
 import { PlayMode } from "./enum";
+import { Lrc } from "lrc-kit";
 import Icons from "./Components/Icons/Icons";
 const { ipcRenderer } = window.require("electron");
 export const AppConfig = createContext(undefined);
+const Lyrics = ({ timestamp, lrc }) => {
+    const containerRef = useRef(null);
+    const [c, _c] = useState([]);
+    const [lcl, _lcl] = useState([]);
+
+    useEffect(() => {
+        // Scroll to the middle of the container
+        const i = c.findIndex((v) => v.timestamp >= timestamp);
+        if (i !== -1) {
+            document.querySelector(`.LyricsLine${i}`).scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }, [timestamp]);
+
+    useEffect(() => {
+        // Parse the LRC string
+        const llrc = Lrc.parse(lrc);
+        _c(llrc.lyrics);
+
+        // // Find the line closest to the timestamp
+        // const closestLineIndex = lrcObj.findIndexByTime(timestamp);
+
+        // // Scroll to the closest line
+        // if (containerRef.current && closestLineIndex !== -1) {
+        //     const lineHeight = 20; // Adjust this value based on your styling
+        //     containerRef.current.scrollTop = lineHeight * closestLineIndex - containerRef.current.clientHeight / 2;
+        // }
+    }, [lrc]);
+
+    return (
+        <div className="LyricsPlayer" ref={containerRef}>
+            {c.map((line, index) => (
+                <p className={`LyricsLine${index}`} key={index}>
+                    {line.content}
+                </p>
+            ))}
+        </div>
+    );
+};
 
 function App() {
     const audioPlayerRef = useRef(null);
@@ -21,14 +60,15 @@ function App() {
     const [playHistory, setPlayHistory] = useState([]);
     const [selectedAlbum, _selectedAlbum] = useState("_");
     const [selectedPlaylist, _selectedPlaylist] = useState("");
-
+    const [showLyrics, _showLyrics] = useState(false);
     const [selectedArtist, _selectedArtist] = useState("_");
     const [selectedTab, _selectedTab] = useState("Playlists");
     const [menuData, _menuData] = useState({ playlists: [], albums: [], artists: [] });
-
+    const [lrc, _lrc] = useState("");
+    const [ts, _ts] = useState("");
     useEffect(() => {
         // Fetch and set the music list on startup
-        listMusicFiles("C:\\Users\\hlin\\Documents\\Firefly\\Music")
+        listMusicFiles("D:\\Music")
             .then((musicList) => {
                 console.log(musicList);
                 _songs(musicList.songs);
@@ -37,7 +77,18 @@ function App() {
                     playlists: [],
                     albums: [{ key: "_", album: "All Albums" }]
                         .concat(
-                            (Object.values(musicList.albums) ?? []).sort((a, b) => a?.album?.localeCompare(b.album))
+                            (Object.values(musicList.albums) ?? []).sort((a, b) => {
+                                const albumA = a.album || "";
+                                const albumB = b.album || "";
+
+                                if (albumA === "Unknown Album" && albumB !== "Unknown Album") {
+                                    return -1; // "Unknown Album" comes first
+                                } else if (albumA !== "Unknown Album" && albumB === "Unknown Album") {
+                                    return 1; // "Unknown Album" comes first
+                                } else {
+                                    return albumA.localeCompare(albumB);
+                                }
+                            })
                         )
                         .map((v) => ({
                             key: v.key,
@@ -47,10 +98,18 @@ function App() {
                                     <div>{v.albumartist}</div>
                                 </Typography>
                             ),
-                            icon: v.cover ? <img src={v.cover} alt="6" width={40} height={40} /> : undefined,
+                            icon: v.cover ? (
+                                <img src={v.cover} alt="6" width={40} height={40} />
+                            ) : v.key === "_" ? (
+                                <Icons.Album />
+                            ) : (
+                                <Icons.Disc />
+                            ),
                         })),
-                    artists: [{ key: "_", label: "All Artists" }].concat(
-                        musicList.artists.sort((a, b) => a.localeCompare(b)).map((v) => ({ key: v, label: v }))
+                    artists: [{ key: "_", label: "All Artists", icon: <Icons.Group /> }].concat(
+                        musicList.artists
+                            .sort((a, b) => a.localeCompare(b))
+                            .map((v) => ({ key: v, label: v, icon: <Icons.User /> }))
                     ),
                 });
             })
@@ -69,6 +128,7 @@ function App() {
             addToHistory(song);
             setCurrentPlaying(song.filePath);
         }
+        getLyrics(song.filePath).then(_lrc);
     };
 
     const addToHistory = (song) => {
@@ -163,7 +223,6 @@ function App() {
             label: "Artists",
         },
     ];
-    //   const App = () => <Tabs defaultActiveKey="1" items={items} onChange={onChange} />;
 
     const filterMusicList = (action, key) => {
         setMusicList([]);
@@ -226,8 +285,7 @@ function App() {
                         },
                     },
                     token: {
-                        fontFamily: `Honkai, StarRail-EN, StarRail-ZH, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif`,
-                        fontWeightStrong: 400,
+                        fontFamily: `ChillRoundGothic, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif`,
                     },
                 }}
             >
@@ -264,9 +322,9 @@ function App() {
                             />
                         </Button.Group>
                     </div>
-                    <div className="Content">
+                    <div className={`Content ${showLyrics ? "ShowLyrics" : ""}`}>
                         <Menu
-                            className="Menu"
+                            className="Menu Playlist"
                             mode="inline"
                             defaultSelectedKeys={["_"]}
                             // onSelect={menuAction.Playlists}
@@ -274,7 +332,7 @@ function App() {
                             style={{ display: selectedTab === "Playlists" ? undefined : "none" }}
                         />
                         <Menu
-                            className="Menu"
+                            className="Menu Album"
                             mode="inline"
                             selectedKeys={[selectedAlbum]}
                             onSelect={(i) => _selectedAlbum(i.key)}
@@ -282,7 +340,7 @@ function App() {
                             style={{ display: selectedTab === "Albums" ? undefined : "none" }}
                         />
                         <Menu
-                            className="Menu"
+                            className="Menu Artist"
                             mode="inline"
                             selectedKeys={[selectedArtist]}
                             onSelect={(i) => _selectedArtist(i.key)}
@@ -306,25 +364,9 @@ function App() {
                                     ),
                                 }))}
                         />
-
-                        {/* <Table
-                            ref={tableRef}
-                            columns={columns}
-                            dataSource={musicList}
-                            size="small"
-                            pagination={false}
-                            scroll={{ y: "calc(100vh - 159px)" }}
-                            onRow={(record, rowIndex) => {
-                                return {
-                                    onClick: (event) => playMusic(record),
-                                };
-                            }}
-                            rowSelection={{
-                                type: "radio",
-                                selectedRowKeys: [curp],
-                                renderCell: () => <></>,
-                            }}
-                        /> */}
+                        <div className="Lyrics">
+                            <Lyrics timestamp={0} lrc={lrc} />
+                        </div>
                     </div>
                     <div className="Footer">
                         <AudioPlayer
@@ -336,6 +378,7 @@ function App() {
                             enableOnPrevious={enableGetPrevious()}
                             playMode={playMode}
                             onPlayModeChange={onPlayModeChange}
+                            showLyrics={_showLyrics}
                         />
                         {/* <div>
                             <label>Play Mode:</label>

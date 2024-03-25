@@ -4,7 +4,7 @@ import Icon from "@ant-design/icons";
 import Icons from "./Components/Icons/Icons";
 import { PlayMode } from "./enum";
 const AudioPlayer = forwardRef(
-    ({ src, onNext, onPrevious, enableOnNext, enableOnPrevious, playMode, onPlayModeChange }, ref) => {
+    ({ src, onNext, onPrevious, enableOnNext, enableOnPrevious, playMode, onPlayModeChange, showLyrics }, ref) => {
         const [audio] = useState(new Audio());
         const [currentTime, setCurrentTime] = useState(0);
         const [duration, setDuration] = useState(0);
@@ -110,28 +110,22 @@ const AudioPlayer = forwardRef(
                     <div className="AudioPlayer">
                         <div>
                             <Button
-                                icon={<Icons.PicInPic />}
+                                icon={<Icons.MapPin />}
                                 shape="circle"
                                 type="link"
                                 onClick={() => {
-                                    document
-                                        .querySelector(".ant-menu.Songs > li.ant-menu-item-selected")
-                                        .scrollIntoView({ behavior: "smooth", block: "center" });
+                                    try {
+                                        document
+                                            .querySelector(".ant-menu.Songs > li.ant-menu-item-selected")
+                                            .scrollIntoView({ behavior: "smooth", block: "center" });
+                                    } catch {}
                                 }}
                             />
                             <Button
-                                icon={
-                                    playMode === PlayMode.RepeatOne ? (
-                                        <Icons.RepeatOne />
-                                    ) : playMode === PlayMode.Loop ? (
-                                        <Icons.Repeat />
-                                    ) : (
-                                        <Icons.Shuffle />
-                                    )
-                                }
+                                icon={<Icons.QuoteText />}
                                 shape="circle"
                                 type="link"
-                                onClick={onPlayModeChange}
+                                onClick={() => showLyrics((i) => !i)}
                             />
                         </div>
                         <div style={{ gap: 3 }}>
@@ -158,22 +152,20 @@ const AudioPlayer = forwardRef(
                         </div>
 
                         <div>
-                            <Popover
-                                content={
-                                    <Slider
-                                        vertical
-                                        style={{ height: 100 }}
-                                        min={0.5}
-                                        max={2}
-                                        step={0.01}
-                                        value={playbackRate}
-                                        onChange={handleSpeedChange}
-                                    />
+                            <Button
+                                icon={
+                                    playMode === PlayMode.RepeatOne ? (
+                                        <Icons.RepeatOne />
+                                    ) : playMode === PlayMode.Loop ? (
+                                        <Icons.Repeat />
+                                    ) : (
+                                        <Icons.Shuffle />
+                                    )
                                 }
-                                trigger="hover"
-                            >
-                                <Button icon={<Icons.Speed />} type="link" shape="circle" />
-                            </Popover>
+                                shape="circle"
+                                type="link"
+                                onClick={onPlayModeChange}
+                            />
                             <Popover
                                 content={
                                     <Slider
